@@ -1,16 +1,16 @@
 uniform float uSize;
-uniform float uTime;
-attribute vec3 positionAizawa;
+
 
 void main()
 {  
-    vec3 morphed = vec3(0.0);
+    // vec3 morphed = vec3(0.0);
     // morphed += ( positionAizawa - position )* abs(sin(uTime*0.1)) ;
     // morphed += position;
 
-    morphed = position + (positionAizawa - position)*abs(sin(uTime*0.5))  ; 
+    // morphed =  (positionAizawa - position)*abs(sin(uTime*0.2))  ; 
+    // morphed += position ;
     // position
-    vec4 modelPosition = modelMatrix * vec4(morphed,1.0);
+    vec4 modelPosition = modelMatrix * vec4(position,1.0);
 
    
 
