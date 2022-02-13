@@ -2,12 +2,16 @@
 {
     margin: 0;
     padding: 0;
+    outline: 2px red solid;
 }
 
-html,
+/* html,
 body
 {
     overflow: hidden;
+} */
+html{
+    background-color: #fdfdfd;
 }
 
 .webgl
@@ -16,4 +20,28 @@ body
     top: 0;
     left: 0;
     outline: none;
+    z-index: -1;
+}
+
+.cameraControls{
+    width: 25%;
+    height: 15%;
+    z-index: 1;
+    color: white;
+}
+
+.section{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    padding: 0% 5% ;
+    font-size: 3vmin;
+}
+.welcome{
+    width: 50%;
+}
+section:nth-child(odd)
+{
+    justify-content: flex-end;
 }

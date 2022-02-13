@@ -1,17 +1,30 @@
 uniform float uSize;
 uniform float uTime;
+uniform float uSectionNumber;
+uniform float uScrollY;
 attribute vec3 positionAizawa;
 
 void main()
 {  
-    vec3 morphed = vec3(0.0);
-    morphed += ( positionAizawa - position )* abs(sin(uTime*0.1)) ;
-    morphed += position;
+    vec3 morphAizawa = vec3(0.0);
+    // morphAizawa += (positionAizawa - position ) * uScrollY ;
 
-    // morphed =  (positionAizawa - position)*abs(sin(uTime*0.2))  ; 
-    // morphed += position ;
+    morphAizawa += position;
+
+    // morphAizawa =  (positionAizawa - position)*abs(sin(uTime*0.2))  ; 
+    // morphAizawa += position ;
     // position
-    vec4 modelPosition = modelMatrix * vec4(morphed,1.0);
+
+    // Transition to aizawa
+    // vec4 modelPosition = modelMatrix * vec4(morphAizawa,1.0);
+
+    // morph using mix
+
+    // vec3 morphAizawa = mix(position,positionAizawa,uScrollY)*step(0.1,uScrollY);
+
+    // Static
+    vec4 modelPosition = modelMatrix * vec4(morphAizawa,1.0);
+
 
    
 

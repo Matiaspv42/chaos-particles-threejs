@@ -81,12 +81,13 @@ const generateGalaxy = () =>
     let aizawaPoints = [0.1,0.0,0.0]
     let iterations = 1000000
     let step = 0.01
-    let a = 0.95
-    let b = 0.7
-    let c = 0.6
-    let d = 3.5
-    let e = 0.25
-    let f = 0.1
+    let constantsAizawa = {}
+    constantsAizawa.a = 0.95
+    constantsAizawa.b = 0.7
+    constantsAizawa.c = 0.6
+    constantsAizawa.d = 3.5
+    constantsAizawa.e = 0.25
+    constantsAizawa.f = 0.1
 
     for(let i = 0; i<(iterations/3) ;i++){
         const i3 = i*3
@@ -97,9 +98,9 @@ const generateGalaxy = () =>
         let z = aizawaPoints[i3+2]
 
         // Increments calculation
-        var dx = ((z-b)*x - (d*y))   * step;
-        var dy = ((d*x) + (z-b)*y) * step;
-        var dz = (c + (a*z) - ((z*z*z)/3)-(x*x + y*y)*(1 + e*z) + f*z*x*x*x)   * step;
+        var dx = ((z-constantsAizawa.b)*x - (constantsAizawa.d*y))   * step;
+        var dy = ((constantsAizawa.d*x) + (z-constantsAizawa.b)*y) * step;
+        var dz = (constantsAizawa.c + ( constantsAizawa.a*z) - ((z*z*z)/3)-(x*x + y*y)*(1 + constantsAizawa.e*z) + constantsAizawa.f*z*x*x*x)   * step;
 
         // new position
 
@@ -122,7 +123,8 @@ const generateGalaxy = () =>
     let halvorsenPoints = [1,0,0]
     iterations = 100000
     step = 0.001
-    a = 1.4
+    let constantsHalsorven = {}
+    constantsHalsorven.a = 1.4
 
 
     for(let i = 0; i<(iterations/3) ;i++){
@@ -134,9 +136,9 @@ const generateGalaxy = () =>
         let z = halvorsenPoints[i3+2]
 
         // Increments calculation
-        var dx = (-a*x -4*y - 4*z - y*y)   * step;
-        var dy = (-a*y - 4*z -4*x - z*z) * step;
-        var dz = (-a*z-4*x-4*y-x*x)   * step;
+        var dx = (-constantsHalsorven.a*x -4*y - 4*z - y*y)   * step;
+        var dy = (-constantsHalsorven.a*y - 4*z -4*x - z*z) * step;
+        var dz = (-constantsHalsorven.a*z-4*x-4*y-x*x)   * step;
 
         // new position
 
@@ -155,46 +157,46 @@ const generateGalaxy = () =>
         positionsHalsorven[i] = halvorsenPoints[i]
     }
     
-    // Pickover Attractor
+    // // Pickover Attractor
 
-    let pointsPickover =[1,1,0]
-    let constantsPickover = {
-        a:-1.4,
-        b:1.6,
-        c:1.0,
-        d:0.7
-    }
+    // let pointsPickover =[1,1,0]
+    // let constantsPickover = {
+    //     a:-1.4,
+    //     b:1.6,
+    //     c:1.0,
+    //     d:0.7
+    // }
 
-    for(let i = 0; i<(iterations/3) ;i++){
-        const i3 = i*3
+    // for(let i = 0; i<(iterations/3) ;i++){
+    //     const i3 = i*3
 
-        // Current position
-        let x_old = pointsPickover[i3]
-        let y_old = pointsPickover[i3+1]
-        let z_old = pointsPickover[i3+2]
+    //     // Current position
+    //     let x_old = pointsPickover[i3]
+    //     let y_old = pointsPickover[i3+1]
+    //     let z_old = pointsPickover[i3+2]
 
-        // Increments calculation
-        var x_new = (Math.sin(constantsPickover.a * y_old) + c*Math.cos(a*x_old));
-        var y_new = (Math.sin(constantsPickover.b * x_old) + d *Math.cos(constantsPickover.b * y_old));
-        // var z_new = (x_old*Math.sin(constantsPickover.a));
-        var z_new = z_old
+    //     // Increments calculation
+    //     var x_new = (Math.sin(constantsPickover.a * y_old) + c*Math.cos(a*x_old));
+    //     var y_new = (Math.sin(constantsPickover.b * x_old) + d *Math.cos(constantsPickover.b * y_old));
+    //     // var z_new = (x_old*Math.sin(constantsPickover.a));
+    //     var z_new = z_old
 
-        // new position
+    //     // new position
 
-        pointsPickover.push(x_new,y_new,z_new)
+    //     pointsPickover.push(x_new,y_new,z_new)
 
-    }
+    // }
 
-    const positionsPickover = new Float32Array(iterations)
-    const geometryPickover = new THREE.BufferGeometry()
+    // const positionsPickover = new Float32Array(iterations)
+    // const geometryPickover = new THREE.BufferGeometry()
 
     
 
-    for(let i = 0 ; i<(iterations);i++){
-        positionsPickover[i] = pointsPickover[i]
-    }
+    // for(let i = 0 ; i<(iterations);i++){
+    //     positionsPickover[i] = pointsPickover[i]
+    // }
 
-    geometryPickover.setAttribute('position', new THREE.BufferAttribute(positionsPickover,3))
+    // geometryPickover.setAttribute('position', new THREE.BufferAttribute(positionsPickover,3))
 
     // Roessler
     // for(let i = 0; i<(iterations/3) ;i++){
@@ -231,6 +233,8 @@ const generateGalaxy = () =>
         uniforms:{
             uTime:{value : 0},
             uSize:{value: 30 * renderer.getPixelRatio()},
+            uSectionNumber:{value:0},
+            uScrollY: {value:0}
         }
     })
 
@@ -249,12 +253,13 @@ const generateGalaxy = () =>
 
     // We create the points
 
-    points = new THREE.Points(geometryPickover, material2)
+    points = new THREE.Points(geometryHalsorven, material)
     scene.add(points)
-
-   
-
+    points.position.x = 12
+    points.position.y = 4
+    points.position.z = -6
 }
+
 
 
 // gui.add(parameters, 'count').min(100).max(1000000).step(100).onFinishChange(generateGalaxy)
@@ -289,14 +294,45 @@ window.addEventListener('resize', () =>
 })
 
 /**
+ * Scroll
+ */
+let scrollY = window.scrollY
+// section number is going to be used to trigger the shaders
+let sectionNumber = 0.01
+window.addEventListener('scroll', ()=>{
+    scrollY = window.scrollY
+    material.uniforms.uScrollY.value = scrollY/sizes.height
+    sectionNumber = Math.floor(scrollY/sizes.height) 
+    console.log(scrollY/sizes.height);
+    material.uniforms.uSectionNumber.value = sectionNumber
+})
+
+
+/**
+ * Parallax
+ */
+
+const cursor = {}
+cursor.x = 0
+cursor.y = 0
+window.addEventListener('mousemove',(event)=>{
+    cursor.x = event.clientX / sizes.width -0.5
+    cursor.y = event.clientY / sizes.height -0.5
+    
+})
+
+/**
  * Camera
  */
+// group
+const cameraGroup = new THREE.Group()
+scene.add(cameraGroup)
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 4.22
-camera.position.y = 10.5
-camera.position.z = 8.1
-
+camera.position.x = 13
+camera.position.y = 1.4
+camera.position.z = 20
+scene.add(camera)
 
 
 
@@ -310,22 +346,32 @@ gui.add(parameters, 'positionCameraZ').min(-30).max(30).step(0.1).onChange(value
 
 
 // Controls
+const cameraInfo = document.querySelector('.cameraControls')
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 let cameraDirection = new THREE.Vector3()
 controls.addEventListener( "change", event => {  
-    camera.lookAt(points.position)
-    console.log('Position', controls.object.position ); 
-    console.log('Looking at',    camera.getWorldDirection(cameraDirection))
-    console.log('Angle', camera.rotation)
+    // camera.lookAt(points.position)
+    const cameraInfo = document.querySelector('.cameraControls')
+    cameraInfo.innerHTML = `
+    <p>PositionX: ${camera.position.x}</p>
+    <p>PositionY: ${camera.position.y}</p>
+    <p>PositionZ: ${camera.position.z}</p>
+    <p>RotationX: ${camera.rotation.x}</p>
+    <p>RotationY: ${camera.rotation.x}</p>
+    <p>RotationZ: ${camera.rotation.x}</p>
+`
 } )
+
+
 
 
 /**
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    alpha: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -339,7 +385,7 @@ generateGalaxy()
 const axesHelper = new THREE.AxesHelper( 5 );
 scene.add( axesHelper );
 
-scene.add(camera)
+
 /**
  * Animate
  */
@@ -350,18 +396,32 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
+
     // update material
 
-    // material.uniforms.uTime.value = elapsedTime
+    material.uniforms.uTime.value = elapsedTime
 
-    // // update camera
-    // camera.position.x = Math.sin(elapsedTime * 0.2)*0.2  
-    // camera.position.z = Math.cos(elapsedTime* 0.2)*0.3  
+    // Animate Camera
+    // parallax
+    // const parallaxX = cursor.x
+    // const parallaxY = -cursor.y
+    // const currentPositionCamera = {}
+    // // currentPositionCamera.x = camera.position.x   
+    // // currentPositionCamera.y = camera.position.y   
+    // camera.position.x = parallaxX  
+    // camera.position.y = parallaxY  
+    // console.log(camera.position , currentPositionCamera);
+    // camera.position.x = parallaxX 
+    // camera.position.y = parallaxY 
     
-    // camera.lookAt(points.position)
+    // Update points
+
+    points.rotation.x = elapsedTime*0.01
+    points.rotation.y = elapsedTime*0.02
+
     
     // Update controls
-    controls.update()
+    // controls.update()
 
     // Render
     renderer.render(scene, camera)

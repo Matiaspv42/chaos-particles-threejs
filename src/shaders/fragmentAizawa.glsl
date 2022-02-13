@@ -15,5 +15,6 @@ void main(){
     strength = 1.0 -strength;
     strength = pow(strength,10.0);
     
+    
      gl_FragColor = vec4(vec3(strength),1.0);
 }
