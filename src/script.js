@@ -259,7 +259,7 @@ const generateGalaxy = () =>
 
     points = new THREE.Points(geometryHalsorven, material)
     scene.add(points)
-    points.position.x = 12
+    points.position.x = 18
     points.position.y = 4
     points.position.z = -6
 }
@@ -315,12 +315,32 @@ window.addEventListener('scroll', ()=>{
         gsap.to(
             material.uniforms.uAizawa,
             {
-                duration:1.5,
+                duration:3.5,
                 value: 1
             }
         )
-    }
+        gsap.to(
+            camera.position,
+            {
+                duration:3.5,
+                x:14,
+                y:4.4,
+                z:-3.26
+            }
+        )
+        gsap.to(
+            camera.rotation,
+            {
+                duration:3.5,
+                x:0.,
+                y:-0.62,
+                z:-0.22
+            }
+        )
+       
 
+    }
+    
 
 })
 
@@ -370,13 +390,13 @@ let cameraDirection = new THREE.Vector3()
 controls.addEventListener( "change", event => {  
     // camera.lookAt(points.position)
     const cameraInfo = document.querySelector('.cameraControls')
-    // cameraInfo.innerHTML = `
-    // <p>PositionX: ${camera.position.x}</p>
-    // <p>PositionY: ${camera.position.y}</p>
-    // <p>PositionZ: ${camera.position.z}</p>
-    // <p>RotationX: ${camera.rotation.x}</p>
-    // <p>RotationY: ${camera.rotation.x}</p>
-    // <p>RotationZ: ${camera.rotation.x}</p>`
+    cameraInfo.innerHTML = `
+    <p style="color: black">PositionX: ${camera.position.x}</p>
+    <p style="color: black">PositionY: ${camera.position.y}</p>
+    <p style="color: black">PositionZ: ${camera.position.z}</p>
+    <p style="color: black">RotationX: ${camera.rotation.x}</p>
+    <p style="color: black">RotationY: ${camera.rotation.x}</p>
+    <p style="color: black">RotationZ: ${camera.rotation.x}</p>`
 } )
 
 
@@ -418,17 +438,7 @@ const tick = () =>
     material.uniforms.uTime.value = elapsedTime
 
     // Animate Camera
-    // parallax
-    // const parallaxX = cursor.x
-    // const parallaxY = -cursor.y
-    // const currentPositionCamera = {}
-    // // currentPositionCamera.x = camera.position.x   
-    // // currentPositionCamera.y = camera.position.y   
-    // camera.position.x = parallaxX  
-    // camera.position.y = parallaxY  
-    // console.log(camera.position , currentPositionCamera);
-    // camera.position.x = parallaxX 
-    // camera.position.y = parallaxY 
+    
     
     // Update points
 
@@ -436,8 +446,8 @@ const tick = () =>
     points.rotation.y = elapsedTime*0.02
 
     
-    // Update controls
-    // controls.update()
+    // Update camera
+    
 
     // Render
     renderer.render(scene, camera)
