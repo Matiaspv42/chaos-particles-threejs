@@ -11,7 +11,9 @@ body
     overflow: hidden;
 } */
 html{
-    background-color: #fdfdfd;
+    /* background-color: #fdfdfd; */
+    background-color: black;
+    color: white;
 }
 
 .webgl
@@ -23,12 +25,7 @@ html{
     z-index: -1;
 }
 
-.cameraControls{
-    width: 25%;
-    height: 15%;
-    z-index: 1;
-    color: white;
-}
+
 
 .section{
     
@@ -50,3 +47,12 @@ section:nth-child(odd)
 {
     justify-content: flex-end;
 }
+
+#camera-vectors {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: grey;
+    padding: 8px;
+    color: white;
+  }

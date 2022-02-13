@@ -1,6 +1,7 @@
 import './style.css'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { FlyControls } from 'three/examples/jsm/controls/FlyControls.js'
+
 import * as dat from 'lil-gui'
 import vertexAizawa from './shaders/vertexAizawa.glsl'
 import fragmentAizawa from './shaders/fragmentAizawa.glsl'
@@ -43,6 +44,7 @@ parameters.positionCameraZ = 0
 let geometry = null
 let material = null
 let points = null
+let randomPoints = null
 let material2 = null
 
 const generateGalaxy = () =>
@@ -53,36 +55,37 @@ const generateGalaxy = () =>
         material.dispose()
         scene.remove(points)
     }
-  // // Lorenz
-    // let lorenzPoints = [Math.random(),Math.random(),Math.random()]
-    // let iterations = 1000000
-    // let step = 0.022
-    // let a = 10
-    // let b = 28
-    // let c = 8/3
+  
+    // Random Points
 
-    // for(let i = 0; i<(iterations/3) ;i++){
-    //     const i3 = i*3
+    let iterations = 1000000
 
-    //     // Current position
-    //     let x = lorenzPoints[i3]
-    //     let y = lorenzPoints[i3+1]
-    //     let z = lorenzPoints[i3+2]
+    let randomPointsPositions = new Float32Array(iterations)
 
-    //     // Increments calculation
-    //     var dx = (a * (y - x))   * step;
-    //     var dy = (x * (b-z) - y) * step;
-    //     var dz = (x*y - (c*z))   * step;
+    for(let i = 0; i<iterations ; i++){
+        const i3 = i*3
+        randomPointsPositions[i3 + 0] = (Math.random() - 0.5) * 100
+        randomPointsPositions[i3 + 1] = (Math.random() - 0.5) * 100
+        randomPointsPositions[i3 + 2] = (Math.random() - 0.5) * 100
+    }
 
-    //     // new position
+    const randomParticles = new THREE.BufferGeometry()
+    randomParticles.setAttribute('position', new THREE.BufferAttribute(randomPointsPositions,3))
 
-    //     lorenzPoints.push( dx + x, dy + y, dz + z)
+    let staticPointsPositions = new Float32Array(iterations)
 
-    // }
+    for(let i = 0; i<iterations/10 ; i++){
+        const i3 = i*3
+        staticPointsPositions[i3 + 0] = (Math.random() - 0.5) * 600
+        staticPointsPositions[i3 + 1] = (Math.random() - 0.5) * 600
+        staticPointsPositions[i3 + 2] = (Math.random() - 0.5) * 600
+    }
 
+    const staticParticles = new THREE.BufferGeometry()
+    staticParticles.setAttribute('position', new THREE.BufferAttribute(staticPointsPositions,3))
+    
     // aizawa
     let aizawaPoints = [0.1,0.0,0.0]
-    let iterations = 1000000
     let step = 0.01
     let constantsAizawa = {}
     constantsAizawa.a = 0.95
@@ -160,72 +163,13 @@ const generateGalaxy = () =>
         positionsHalsorven[i] = halvorsenPoints[i]
     }
     
-    // // Pickover Attractor
-
-    // let pointsPickover =[1,1,0]
-    // let constantsPickover = {
-    //     a:-1.4,
-    //     b:1.6,
-    //     c:1.0,
-    //     d:0.7
-    // }
-
-    // for(let i = 0; i<(iterations/3) ;i++){
-    //     const i3 = i*3
-
-    //     // Current position
-    //     let x_old = pointsPickover[i3]
-    //     let y_old = pointsPickover[i3+1]
-    //     let z_old = pointsPickover[i3+2]
-
-    //     // Increments calculation
-    //     var x_new = (Math.sin(constantsPickover.a * y_old) + c*Math.cos(a*x_old));
-    //     var y_new = (Math.sin(constantsPickover.b * x_old) + d *Math.cos(constantsPickover.b * y_old));
-    //     // var z_new = (x_old*Math.sin(constantsPickover.a));
-    //     var z_new = z_old
-
-    //     // new position
-
-    //     pointsPickover.push(x_new,y_new,z_new)
-
-    // }
-
-    // const positionsPickover = new Float32Array(iterations)
-    // const geometryPickover = new THREE.BufferGeometry()
-
-    
-
-    // for(let i = 0 ; i<(iterations);i++){
-    //     positionsPickover[i] = pointsPickover[i]
-    // }
-
-    // geometryPickover.setAttribute('position', new THREE.BufferAttribute(positionsPickover,3))
-
-    // Roessler
-    // for(let i = 0; i<(iterations/3) ;i++){
-    //     const i3 = i*3
-
-    //     // Current position
-    //     let x = pointsPickover[i3]
-    //     let y = pointsPickover[i3+1]
-    //     let z = pointsPickover[i3+2]
-
-    //     // Increments calculation
-    //     var dx = -(y+z) * step
-    //     var dy = (x+ a *y)*step;
-    //     var dz = (b + z*(x-c));
-
-    //     // new position
-
-    //     pointsPickover.push(dx,dy,dz)
-
-    // }
     
     // Add positions
     geometryHalsorven.setAttribute('position', new THREE.BufferAttribute(positionsHalsorven,3))
     geometryHalsorven.setAttribute('positionAizawa', new THREE.BufferAttribute(positionsAizawa,3))
     geometryAizawa.setAttribute('position', new THREE.BufferAttribute(positionsAizawa,3))
-
+    randomParticles.setAttribute('positionHalsorven', new THREE.BufferAttribute(positionsHalsorven,3))
+    randomParticles.setAttribute('positionAizawa',  new THREE.BufferAttribute(positionsAizawa,3))
 
     // Material
     material = new THREE.ShaderMaterial({
@@ -233,12 +177,14 @@ const generateGalaxy = () =>
         blending: THREE.AdditiveBlending,
         vertexShader: vertexAizawa ,
         fragmentShader: fragmentAizawa,
+        vertexColors: true,
         uniforms:{
             uTime:{value : 0},
-            uSize:{value: 30 * renderer.getPixelRatio()},
+            uSize:{value: 100 * renderer.getPixelRatio()},
             uSectionNumber:{value:0},
             uScrollY: {value:0},
-            uAizawa: {value:0}
+            uAizawa: {value:0},
+            uHalsorven: {value:0}
         }
     })
 
@@ -258,7 +204,10 @@ const generateGalaxy = () =>
     // We create the points
 
     points = new THREE.Points(geometryHalsorven, material)
-    scene.add(points)
+    randomPoints = new THREE.Points(randomParticles, material)
+    // scene.add(points)
+    scene.add(randomPoints)
+    scene.add(staticParticles)
     points.position.x = 18
     points.position.y = 4
     points.position.z = -6
@@ -318,7 +267,7 @@ window.addEventListener('scroll', ()=>{
                 duration:3.5,
                 value: 1
             }
-        )
+        )   
         gsap.to(
             camera.position,
             {
@@ -366,9 +315,10 @@ const cameraGroup = new THREE.Group()
 scene.add(cameraGroup)
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 13
+camera.position.x = -2.0
 camera.position.y = 1.4
-camera.position.z = 20
+camera.position.z = 17.0
+camera.lookAt(-2.0,1.4,-83.0)
 scene.add(camera)
 
 
@@ -383,21 +333,20 @@ gui.add(parameters, 'positionCameraZ').min(-30).max(30).step(0.1).onChange(value
 
 
 // Controls
-const cameraInfo = document.querySelector('.cameraControls')
-const controls = new OrbitControls(camera, canvas)
-controls.enableDamping = true
+// Initiate FlyControls with various params
+const controls = new FlyControls( camera, canvas );
+controls.movementSpeed = 100;
+controls.rollSpeed = Math.PI / 24;
+controls.autoForward = false;
+controls.dragToLook = true;
+
+// set the spans with the queried HTML DOM elements
+// 3. define cameraDirection and span variables
 let cameraDirection = new THREE.Vector3()
-controls.addEventListener( "change", event => {  
-    // camera.lookAt(points.position)
-    const cameraInfo = document.querySelector('.cameraControls')
-    cameraInfo.innerHTML = `
-    <p style="color: black">PositionX: ${camera.position.x}</p>
-    <p style="color: black">PositionY: ${camera.position.y}</p>
-    <p style="color: black">PositionZ: ${camera.position.z}</p>
-    <p style="color: black">RotationX: ${camera.rotation.x}</p>
-    <p style="color: black">RotationY: ${camera.rotation.x}</p>
-    <p style="color: black">RotationZ: ${camera.rotation.x}</p>`
-} )
+let camPositionSpan, camLookAtSpan
+camPositionSpan = document.querySelector("#position");
+camLookAtSpan = document.querySelector("#lookingAt");
+
 
 
 
@@ -437,7 +386,17 @@ const tick = () =>
 
     material.uniforms.uTime.value = elapsedTime
 
-    // Animate Camera
+    
+    // Update controls
+    controls.update(0.01)
+     // calculate and display the vector values on screen
+    // this copies the camera's unit vector direction to cameraDirection
+    camera.getWorldDirection(cameraDirection)
+    // scale the unit vector up to get a more intuitive value
+    cameraDirection.set(cameraDirection.x * 100, cameraDirection.y * 100, cameraDirection.z * 100)
+    // update the onscreen spans with the camera's position and lookAt vectors
+    camPositionSpan.innerHTML = `Position: (${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)})`
+    camLookAtSpan.innerHTML = `LookAt: (${(camera.position.x + cameraDirection.x).toFixed(1)}, ${(camera.position.y + cameraDirection.y).toFixed(1)}, ${(camera.position.z + cameraDirection.z).toFixed(1)})`
     
     
     // Update points
