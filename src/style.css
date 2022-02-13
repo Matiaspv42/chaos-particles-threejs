@@ -31,14 +31,19 @@ html{
 }
 
 .section{
-    width: 100%;
+    
     display: flex;
+    position: relative;
     align-items: center;
     height: 100vh;
-    padding: 0% 5% ;
+    padding-left: 5%;
     font-size: 3vmin;
 }
+
 .welcome{
+    width: 50%;
+}
+.aboutMe{
     width: 50%;
 }
 section:nth-child(odd)

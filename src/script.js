@@ -6,6 +6,9 @@ import vertexAizawa from './shaders/vertexAizawa.glsl'
 import fragmentAizawa from './shaders/fragmentAizawa.glsl'
 import vertexPickover from './shaders/vertexPickover.glsl'
 import fragmentPickover from './shaders/fragmentPickover.glsl'
+import gsap from "gsap";
+
+
 
 
 /**
@@ -234,7 +237,8 @@ const generateGalaxy = () =>
             uTime:{value : 0},
             uSize:{value: 30 * renderer.getPixelRatio()},
             uSectionNumber:{value:0},
-            uScrollY: {value:0}
+            uScrollY: {value:0},
+            uAizawa: {value:0}
         }
     })
 
@@ -298,13 +302,26 @@ window.addEventListener('resize', () =>
  */
 let scrollY = window.scrollY
 // section number is going to be used to trigger the shaders
-let sectionNumber = 0.01
+let currentSection = 0.0
 window.addEventListener('scroll', ()=>{
     scrollY = window.scrollY
     material.uniforms.uScrollY.value = scrollY/sizes.height
-    sectionNumber = Math.floor(scrollY/sizes.height) 
-    console.log(scrollY/sizes.height);
-    material.uniforms.uSectionNumber.value = sectionNumber
+    const newSection = Math.floor(scrollY/sizes.height) 
+    
+    material.uniforms.uSectionNumber.value = newSection
+
+    if(newSection != currentSection){
+        currentSection = newSection
+        gsap.to(
+            material.uniforms.uAizawa,
+            {
+                duration:1.5,
+                value: 1
+            }
+        )
+    }
+
+
 })
 
 
@@ -353,14 +370,13 @@ let cameraDirection = new THREE.Vector3()
 controls.addEventListener( "change", event => {  
     // camera.lookAt(points.position)
     const cameraInfo = document.querySelector('.cameraControls')
-    cameraInfo.innerHTML = `
-    <p>PositionX: ${camera.position.x}</p>
-    <p>PositionY: ${camera.position.y}</p>
-    <p>PositionZ: ${camera.position.z}</p>
-    <p>RotationX: ${camera.rotation.x}</p>
-    <p>RotationY: ${camera.rotation.x}</p>
-    <p>RotationZ: ${camera.rotation.x}</p>
-`
+    // cameraInfo.innerHTML = `
+    // <p>PositionX: ${camera.position.x}</p>
+    // <p>PositionY: ${camera.position.y}</p>
+    // <p>PositionZ: ${camera.position.z}</p>
+    // <p>RotationX: ${camera.rotation.x}</p>
+    // <p>RotationY: ${camera.rotation.x}</p>
+    // <p>RotationZ: ${camera.rotation.x}</p>`
 } )
 
 
